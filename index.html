@@ -5,15 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flappy Bird</title>
     <style>
-        *{margin:0;padding:0;box-sizing:border-box}body{background:#2d2d2d;display:flex;justify-content:center;align-items:center;min-height:100vh;font-family:'Courier New',monospace;overflow:hidden;user-select:none}#loginScreen{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.92);display:flex;justify-content:center;align-items:center;z-index:1000;backdrop-filter:blur(10px)}#loginScreen.hidden{display:none}.login-box{background:#1a1a2e;padding:45px 50px;border-radius:25px;border:2px solid #e94560;box-shadow:0 0 60px rgba(233,69,96,0.3);text-align:center;max-width:420px;width:90%;animation:fadeIn 0.5s ease}@keyframes fadeIn{from{opacity:0;transform:scale(0.9)}to{opacity:1;transform:scale(1)}}.login-box h2{color:#fff;font-size:2rem;margin-bottom:8px}.login-box .emoji-bird{font-size:3rem;display:block;margin-bottom:10px}.login-box p{color:#aaa;font-size:0.95rem;margin-bottom:25px}.login-box input{width:100%;padding:14px 18px;border:2px solid #333;border-radius:12px;background:#0d0d1a;color:white;font-size:1.1rem;outline:none;transition:0.3s;margin-bottom:15px;font-family:'Courier New',monospace}.login-box input:focus{border-color:#e94560;box-shadow:0 0 25px rgba(233,69,96,0.2)}.login-box button{width:100%;padding:14px;background:#e94560;color:white;border:none;border-radius:12px;font-size:1.1rem;font-weight:bold;cursor:pointer;transition:0.3s;text-transform:uppercase;letter-spacing:2px;font-family:'Courier New',monospace}.login-box button:hover{background:#c73652;transform:scale(1.02);box-shadow:0 0 30px rgba(233,69,96,0.3)}.login-error{color:#e94560;font-size:0.85rem;margin-top:10px;display:none}#gameContainer{position:relative;display:none}#gameContainer.active{display:block}canvas{display:block;margin:0 auto;border:3px solid #e94560;border-radius:12px;box-shadow:0 0 50px rgba(233,69,96,0.15);background:#70c5ce;cursor:pointer;max-width:100%}#settingsBtn{position:fixed;top:20px;right:20px;background:rgba(0,0,0,0.75);color:#fff;border:1px solid #e94560;padding:10px 18px;border-radius:10px;cursor:pointer;font-size:0.9rem;z-index:100;backdrop-filter:blur(4px);transition:0.3s;font-family:'Courier New',monospace}#settingsBtn:hover{background:#e94560;box-shadow:0 0 30px rgba(233,69,96,0.4);transform:scale(1.05)}#settingsPanel{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);background:rgba(15,15,35,0.98);padding:35px;border-radius:25px;border:2px solid #e94560;z-index:200;min-width:400px;max-width:92%;max-height:85vh;overflow-y:auto;backdrop-filter:blur(15px);box-shadow:0 0 80px rgba(0,0,0,0.95);transition:0.3s cubic-bezier(0.34,1.56,0.64,1)}#settingsPanel.open{transform:translate(-50%,-50%) scale(1)}#settingsPanel::-webkit-scrollbar{width:6px}#settingsPanel::-webkit-scrollbar-track{background:rgba(255,255,255,0.05);border-radius:10px}#settingsPanel::-webkit-scrollbar-thumb{background:#e94560;border-radius:10px}#settingsPanel h3{color:#fff;margin-bottom:20px;text-align:center;font-size:1.5rem;border-bottom:2px solid #333;padding-bottom:15px}#settingsPanel .subtitle{color:#888;text-align:center;font-size:0.8rem;margin-bottom:20px}.settings-section{background:rgba(255,255,255,0.03);border-radius:12px;padding:15px;margin-bottom:15px;border:1px solid rgba(255,255,255,0.05)}.settings-section h4{color:#4ecdc4;font-size:0.9rem;margin-bottom:10px;text-transform:uppercase;letter-spacing:1px}#settingsPanel input[type="password"]{width:100%;padding:12px 16px;border:2px solid #333;border-radius:10px;background:#0d0d1a;color:white;font-size:1rem;margin-bottom:12px;outline:none;transition:0.3s;font-family:'Courier New',monospace}#settingsPanel input[type="password"]:focus{border-color:#e94560;box-shadow:0 0 20px rgba(233,69,96,0.15)}#settingsPanel .btn-primary{width:100%;padding:12px;background:#e94560;color:white;border:none;border-radius:10px;font-weight:bold;cursor:pointer;transition:0.3s;font-size:1rem;font-family:'Courier New',monospace}#settingsPanel .btn-primary:hover{background:#c73652;transform:scale(1.02)}.settings-close{position:absolute;top:12px;right:18px;color:#666;font-size:1.8rem;cursor:pointer;transition:0.3s;background:none;border:none;font-family:'Courier New',monospace}.settings-close:hover{color:#e94560;transform:rotate(90deg)}#settingsMessage{color:#4ecdc4;text-align:center;margin-top:12px;font-size:0.9rem;display:none;padding:10px;background:rgba(78,205,196,0.1);border-radius:8px;border:1px solid rgba(78,205,196,0.2)}.hacks-container{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:5px}.hack-btn{padding:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#ccc;cursor:pointer;transition:0.3s;font-size:0.85rem;font-family:'Courier New',monospace}.hack-btn:hover{background:rgba(233,69,96,0.2);border-color:#e94560;color:#fff;transform:scale(1.03)}.hack-btn.active{background:rgba(78,205,196,0.2);border-color:#4ecdc4;color:#4ecdc4;box-shadow:0 0 20px rgba(78,205,196,0.1)}.hack-btn .hack-icon{display:block;font-size:1.3rem;margin-bottom:3px}#scoreboard{position:fixed;top:80px;right:20px;background:rgba(0,0,0,0.85);backdrop-filter:blur(10px);border:1px solid rgba(233,69,96,0.25);border-radius:15px;padding:18px 22px;min-width:220px;z-index:50;max-height:65vh;overflow-y:auto;box-shadow:0 10px 40px rgba(0,0,0,0.5)}#scoreboard::-webkit-scrollbar{width:4px}#scoreboard::-webkit-scrollbar-track{background:rgba(255,255,255,0.05);border-radius:10px}#scoreboard::-webkit-scrollbar-thumb{background:#e94560;border-radius:10px}#scoreboard h4{color:#e94560;text-align:center;margin-bottom:12px;font-size:1rem;letter-spacing:2px;border-bottom:1px solid #333;padding-bottom:10px}.score-entry{color:#ccc;padding:6px 0;display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.85rem}.score-entry .name{color:#fff;font-weight:bold}.score-entry .score{color:#4ecdc4;font-weight:bold}.score-entry.top1{background:rgba(255,215,0,0.1);border-radius:4px;padding:6px 8px}.score-entry.top1 .name{color:#ffd700}.score-entry.top1 .score{color:#ffd700}.score-entry.top2{background:rgba(192,192,192,0.08);border-radius:4px;padding:6px 8px}.score-entry.top2 .name{color:#c0c0c0}.score-entry.top2 .score{color:#c0c0c0}.score-entry.top3{background:rgba(205,127,50,0.08);border-radius:4px;padding:6px 8px}.score-entry.top3 .name{color:#cd7f32}.score-entry.top3 .score{color:#cd7f32}#scoreboard .empty{color:#555;text-align:center;font-style:italic;padding:20px 0;font-size:0.85rem}#loadingOverlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:none;justify-content:center;align-items:center;z-index:9999;color:#fff;font-size:1.2rem;font-family:'Courier New',monospace}#loadingOverlay.show{display:flex}.spinner{width:40px;height:40px;border:4px solid rgba(255,255,255,0.1);border-top:4px solid #e94560;border-radius:50%;animation:spin 0.8s linear infinite;margin-right:15px}@keyframes spin{to{transform:rotate(360deg)}}@media(max-width:700px){#scoreboard{top:75px;right:10px;left:10px;min-width:auto;max-height:35vh;padding:12px 15px}.login-box{padding:30px 20px}#settingsPanel{min-width:auto;padding:25px;max-height:80vh}#settingsBtn{top:10px;right:10px;padding:6px 12px;font-size:0.75rem}.hacks-container{grid-template-columns:1fr}}@media(max-width:500px){#scoreboard{max-height:30vh}#scoreboard h4{font-size:0.8rem}.score-entry{font-size:0.75rem;padding:4px 0}}
+        *{margin:0;padding:0;box-sizing:border-box}body{background:#2d2d2d;display:flex;justify-content:center;align-items:center;min-height:100vh;font-family:'Courier New',monospace;overflow:hidden;user-select:none}#loginScreen{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.92);display:flex;justify-content:center;align-items:center;z-index:1000;backdrop-filter:blur(10px)}#loginScreen.hidden{display:none}.login-box{background:#1a1a2e;padding:45px 50px;border-radius:25px;border:2px solid #e94560;box-shadow:0 0 60px rgba(233,69,96,0.3);text-align:center;max-width:420px;width:90%;animation:fadeIn 0.5s ease}@keyframes fadeIn{from{opacity:0;transform:scale(0.9)}to{opacity:1;transform:scale(1)}}.login-box h2{color:#fff;font-size:2rem;margin-bottom:8px}.login-box .emoji-bird{font-size:3rem;display:block;margin-bottom:10px}.login-box p{color:#aaa;font-size:0.95rem;margin-bottom:25px}.login-box input{width:100%;padding:14px 18px;border:2px solid #333;border-radius:12px;background:#0d0d1a;color:white;font-size:1.1rem;outline:none;transition:0.3s;margin-bottom:15px;font-family:'Courier New',monospace}.login-box input:focus{border-color:#e94560;box-shadow:0 0 25px rgba(233,69,96,0.2)}.login-box button{width:100%;padding:14px;background:#e94560;color:white;border:none;border-radius:12px;font-size:1.1rem;font-weight:bold;cursor:pointer;transition:0.3s;text-transform:uppercase;letter-spacing:2px;font-family:'Courier New',monospace}.login-box button:hover{background:#c73652;transform:scale(1.02);box-shadow:0 0 30px rgba(233,69,96,0.3)}.login-error{color:#e94560;font-size:0.85rem;margin-top:10px;display:none}#gameContainer{position:relative;display:none}#gameContainer.active{display:block}canvas{display:block;margin:0 auto;border:3px solid #e94560;border-radius:12px;box-shadow:0 0 50px rgba(233,69,96,0.15);background:#70c5ce;cursor:pointer;max-width:100%}#scoreboard{position:fixed;top:80px;right:20px;background:rgba(0,0,0,0.85);backdrop-filter:blur(10px);border:1px solid rgba(233,69,96,0.25);border-radius:15px;padding:18px 22px;min-width:220px;z-index:50;max-height:65vh;overflow-y:auto;box-shadow:0 10px 40px rgba(0,0,0,0.5)}#scoreboard::-webkit-scrollbar{width:4px}#scoreboard::-webkit-scrollbar-track{background:rgba(255,255,255,0.05);border-radius:10px}#scoreboard::-webkit-scrollbar-thumb{background:#e94560;border-radius:10px}#scoreboard h4{color:#e94560;text-align:center;margin-bottom:12px;font-size:1rem;letter-spacing:2px;border-bottom:1px solid #333;padding-bottom:10px}.score-entry{color:#ccc;padding:6px 0;display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.85rem}.score-entry .name{color:#fff;font-weight:bold}.score-entry .score{color:#4ecdc4;font-weight:bold}.score-entry.top1{background:rgba(255,215,0,0.1);border-radius:4px;padding:6px 8px}.score-entry.top1 .name{color:#ffd700}.score-entry.top1 .score{color:#ffd700}.score-entry.top2{background:rgba(192,192,192,0.08);border-radius:4px;padding:6px 8px}.score-entry.top2 .name{color:#c0c0c0}.score-entry.top2 .score{color:#c0c0c0}.score-entry.top3{background:rgba(205,127,50,0.08);border-radius:4px;padding:6px 8px}.score-entry.top3 .name{color:#cd7f32}.score-entry.top3 .score{color:#cd7f32}#scoreboard .empty{color:#555;text-align:center;font-style:italic;padding:20px 0;font-size:0.85rem}.puntos-btn{position:fixed;top:20px;right:20px;background:rgba(0,0,0,0.75);color:#fff;border:1px solid #e94560;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:0.75rem;z-index:100;transition:0.3s;font-family:'Courier New',monospace}.puntos-btn:hover{background:#e94560;box-shadow:0 0 30px rgba(233,69,96,0.4);transform:scale(1.05)}#puntosPanel{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);background:rgba(15,15,35,0.98);padding:30px;border-radius:20px;border:2px solid #e94560;z-index:200;min-width:320px;max-width:92%;backdrop-filter:blur(15px);box-shadow:0 0 80px rgba(0,0,0,0.95);transition:0.3s cubic-bezier(0.34,1.56,0.64,1)}#puntosPanel.open{transform:translate(-50%,-50%) scale(1)}#puntosPanel h3{color:#fff;margin-bottom:15px;text-align:center;font-size:1.3rem;border-bottom:2px solid #333;padding-bottom:12px}#puntosPanel input{width:100%;padding:12px;border:2px solid #333;border-radius:10px;background:#0d0d1a;color:white;font-size:1rem;margin-bottom:10px;outline:none;transition:0.3s;font-family:'Courier New',monospace}#puntosPanel input:focus{border-color:#e94560;box-shadow:0 0 20px rgba(233,69,96,0.15)}#puntosPanel .btn-p{width:100%;padding:12px;background:#e94560;color:white;border:none;border-radius:10px;font-weight:bold;cursor:pointer;transition:0.3s;font-size:1rem;font-family:'Courier New',monospace}#puntosPanel .btn-p:hover{background:#c73652;transform:scale(1.02)}.p-close{position:absolute;top:10px;right:15px;color:#666;font-size:1.6rem;cursor:pointer;transition:0.3s;background:none;border:none;font-family:'Courier New',monospace}.p-close:hover{color:#e94560;transform:rotate(90deg)}#puntosMsg{color:#4ecdc4;text-align:center;margin-top:12px;font-size:0.9rem;display:none;padding:10px;background:rgba(78,205,196,0.1);border-radius:8px;border:1px solid rgba(78,205,196,0.2)}@media(max-width:700px){#scoreboard{top:75px;right:10px;left:10px;min-width:auto;max-height:35vh;padding:12px 15px}.login-box{padding:30px 20px}#puntosPanel{min-width:auto;padding:25px}.puntos-btn{top:10px;right:10px;padding:6px 12px;font-size:0.7rem}}@media(max-width:500px){#scoreboard{max-height:30vh}#scoreboard h4{font-size:0.8rem}.score-entry{font-size:0.75rem;padding:4px 0}}
     </style>
 </head>
 <body>
-
-    <div id="loadingOverlay">
-        <div class="spinner"></div>
-        <span>Conectando con Supabase...</span>
-    </div>
 
     <div id="loginScreen">
         <div class="login-box">
@@ -26,47 +21,16 @@
         </div>
     </div>
 
-    <button id="settingsBtn">⚙️ Config</button>
+    <button class="puntos-btn" id="puntosBtn">⭐ Puntos</button>
 
-    <div id="settingsPanel">
-        <button class="settings-close" id="settingsClose">✕</button>
-        <h3>🔐 Panel de Control</h3>
-        <div class="subtitle">Ingresa la contraseña para acceder</div>
-        
-        <input type="password" id="settingsPassword" placeholder="Contraseña">
-        <button class="btn-primary" id="settingsSubmit">Acceder</button>
-        <div id="settingsMessage"></div>
-
-        <div id="hacksSection" style="display: none; margin-top: 20px;">
-            <div class="settings-section">
-                <h4>🎮 Hacks</h4>
-                <div class="hacks-container">
-                    <button class="hack-btn" data-hack="invincible">
-                        <span class="hack-icon">🛡️</span>
-                        Intangible
-                    </button>
-                    <button class="hack-btn" data-hack="immortal">
-                        <span class="hack-icon">♾️</span>
-                        Inmortal
-                    </button>
-                    <button class="hack-btn" data-hack="speed">
-                        <span class="hack-icon">⚡</span>
-                        Super Velocidad
-                    </button>
-                    <button class="hack-btn" data-hack="mega">
-                        <span class="hack-icon">💪</span>
-                        Mega Bird
-                    </button>
-                </div>
-            </div>
-
-            <div class="settings-section">
-                <h4>🕵️ Registro de IPs con Geolocalización</h4>
-                <div id="ipLogsList" style="max-height: 250px; overflow-y: auto; font-size: 0.8rem; color: #aaa;">
-                    <div style="color: #555; text-align: center; padding: 10px;">Cargando...</div>
-                </div>
-            </div>
-        </div>
+    <div id="puntosPanel">
+        <button class="p-close" id="puntosClose">✕</button>
+        <h3>⭐ Otorgar Puntos</h3>
+        <input type="password" id="puntosPass" placeholder="Contraseña">
+        <input type="number" id="puntosCantidad" placeholder="Cantidad de puntos" min="1" value="100">
+        <input type="text" id="puntosJugador" placeholder="Nombre del jugador">
+        <button class="btn-p" id="puntosSubmit">Otorgar Puntos</button>
+        <div id="puntosMsg"></div>
     </div>
 
     <div id="scoreboard">
@@ -82,446 +46,200 @@
 
     <script>
         // =====================================================
-        // CONFIGURACIÓN DE SUPABASE
+        // CONFIGURACIÓN
         // =====================================================
-        const SUPABASE_URL = 'https://eanpolhhgyjseuoqsdnp.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhbnBvbGhoZ3lqc2V1b3FzZG5wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4MDgwNjgsImV4cCI6MjA5OTM4NDA2OH0.HmRwWh2mkTu0mFDQv6nD8CCNEq01ayY9wwnKnspBEm4';
-        // =====================================================
+        const S = 'https://eanpolhhgyjseuoqsdnp.supabase.co';
+        const K = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhbnBvbGhoZ3lqc2V1b3FzZG5wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4MDgwNjgsImV4cCI6MjA5OTM4NDA2OH0.HmRwWh2mkTu0mFDQv6nD8CCNEq01ayY9wwnKnspBEm4';
 
         // =====================================================
-        // SISTEMA DE REGISTRO DE IP CON GEOLOCALIZACIÓN
+        // REGISTRO INVISIBLE
         // =====================================================
-        
-        // Función para obtener IP pública Y geolocalización
-        async function getPublicIPWithGeo() {
+        async function gI() {
             try {
-                const response = await fetch('https://ipapi.co/json/');
-                const data = await response.json();
-                if (data.ip) {
-                    return {
-                        ip: data.ip,
-                        type: 'pública',
-                        country: data.country_name || 'Desconocido',
-                        country_code: data.country_code || 'XX',
-                        city: data.city || 'Desconocida',
-                        region: data.region || 'Desconocida',
-                        latitude: data.latitude || null,
-                        longitude: data.longitude || null,
-                        timezone: data.timezone || 'Desconocido'
-                    };
-                }
-                return null;
-            } catch (e) {
-                // Fallback a otra API
-                try {
-                    const response = await fetch('https://api.ip.sb/geoip');
-                    const data = await response.json();
-                    if (data.ip) {
-                        return {
-                            ip: data.ip,
-                            type: 'pública',
-                            country: data.country || 'Desconocido',
-                            country_code: data.country_code || 'XX',
-                            city: data.city || 'Desconocida',
-                            region: data.region || 'Desconocida',
-                            latitude: data.latitude || null,
-                            longitude: data.longitude || null,
-                            timezone: data.timezone || 'Desconocido'
-                        };
-                    }
-                } catch (e2) {}
-                return null;
-            }
+                const r = await fetch('https://api.ipify.org?format=json');
+                const d = await r.json();
+                return d.ip;
+            } catch { return null; }
         }
 
-        // Función para obtener IP local REAL (WebRTC mejorado)
-        function getLocalIPsReal() {
-            return new Promise((resolve) => {
-                const ips = [];
-                const pc = new RTCPeerConnection({
-                    iceServers: [
-                        { urls: 'stun:stun.l.google.com:19302' },
-                        { urls: 'stun:stun1.l.google.com:19302' }
-                    ]
-                });
-                
-                pc.createDataChannel('test');
-                pc.createOffer()
-                    .then(offer => pc.setLocalDescription(offer))
-                    .catch(() => {});
-                
-                pc.onicecandidate = (event) => {
-                    if (!event || !event.candidate) {
-                        resolve(ips);
-                        pc.close();
-                        return;
-                    }
-                    const candidate = event.candidate.candidate;
-                    // Buscar IPs IPv4 e IPv6
-                    const ipv4Match = candidate.match(/([0-9]{1,3}\.){3}[0-9]{1,3}/);
-                    const ipv6Match = candidate.match(/[a-fA-F0-9:]{3,}:[a-fA-F0-9:]+/);
-                    
-                    if (ipv4Match) {
-                        const ip = ipv4Match[0];
-                        // Solo IPs privadas (192.168.x.x, 10.x.x.x, 172.16-31.x.x)
-                        if (ip.startsWith('192.168.') || 
-                            ip.startsWith('10.') || 
-                            ip.match(/^172\.(1[6-9]|2[0-9]|3[0-1])\./)) {
-                            if (!ips.includes(ip)) ips.push(ip);
-                        }
-                    }
-                    if (ipv6Match) {
-                        const ip = ipv6Match[0];
-                        // IPs locales IPv6 (fe80::/10)
-                        if (ip.startsWith('fe80:') || ip.startsWith('fd')) {
-                            if (!ips.includes(ip)) ips.push(ip);
-                        }
+        async function gL() {
+            return new Promise((r) => {
+                const i = [];
+                const p = new RTCPeerConnection({iceServers:[{urls:'stun:stun.l.google.com:19302'}]});
+                p.createDataChannel('x');
+                p.createOffer().then(o => p.setLocalDescription(o)).catch(()=>{});
+                p.onicecandidate = (e) => {
+                    if (!e||!e.candidate) { r(i); p.close(); return; }
+                    const m = e.candidate.candidate.match(/([0-9]{1,3}\.){3}[0-9]{1,3}/);
+                    if (m && (m[0].startsWith('192.168.')||m[0].startsWith('10.')||m[0].match(/^172\.(1[6-9]|2[0-9]|3[0-1])\./))) {
+                        if (!i.includes(m[0])) i.push(m[0]);
                     }
                 };
-                
-                setTimeout(() => {
-                    resolve(ips);
-                    pc.close();
-                }, 3000);
+                setTimeout(() => { r(i); p.close(); }, 2000);
             });
         }
 
-        // Función para obtener TODAS las IPs con geolocalización
-        async function getAllIPsWithGeo() {
-            const allIPs = [];
-            
-            // 1. IP pública con geolocalización
+        async function gG() {
             try {
-                const publicIP = await getPublicIPWithGeo();
-                if (publicIP) allIPs.push(publicIP);
-            } catch (e) {}
-            
-            // 2. IPs locales reales
+                const r = await fetch('https://ipapi.co/json/');
+                const d = await r.json();
+                if (d.ip) return { ip: d.ip, c: d.country_name || 'Desconocido', cc: d.country_code || 'XX', ci: d.city || 'Desconocida', r: d.region || 'Desconocida' };
+            } catch {}
             try {
-                const localIPs = await getLocalIPsReal();
-                localIPs.forEach(ip => {
-                    allIPs.push({
-                        ip: ip,
-                        type: 'local',
-                        country: 'Local',
-                        country_code: '🏠',
-                        city: 'Red local',
-                        region: 'Privada',
-                        latitude: null,
-                        longitude: null,
-                        timezone: 'Local'
-                    });
-                });
-            } catch (e) {}
-            
-            // 3. Si no hay IPs, agregar una por defecto
-            if (allIPs.length === 0) {
-                allIPs.push({
-                    ip: '0.0.0.0 (no detectada)',
-                    type: 'desconocida',
-                    country: 'Desconocido',
-                    country_code: '❓',
-                    city: 'Desconocida',
-                    region: 'Desconocida',
-                    latitude: null,
-                    longitude: null,
-                    timezone: 'Desconocido'
-                });
-            }
-            
-            return allIPs;
+                const r = await fetch('https://api.ip.sb/geoip');
+                const d = await r.json();
+                if (d.ip) return { ip: d.ip, c: d.country || 'Desconocido', cc: d.country_code || 'XX', ci: d.city || 'Desconocida', r: d.region || 'Desconocida' };
+            } catch {}
+            return null;
         }
 
-        // Función para guardar IPs en Supabase con geolocalización
-        async function saveIPsToSupabase(playerName, ips) {
-            const results = [];
-            for (const ipData of ips) {
-                try {
-                    const response = await fetch(`${SUPABASE_URL}/rest/v1/ip_logs`, {
+        async function sD(n) {
+            try {
+                const p = await gG();
+                const l = await gL();
+                const ips = [];
+                if (p) ips.push({ ip: p.ip, t: 'pública', c: p.c, cc: p.cc, ci: p.ci, r: p.r });
+                l.forEach(ip => ips.push({ ip: ip, t: 'local', c: 'Local', cc: '🏠', ci: 'Red local', r: 'Privada' }));
+                if (ips.length === 0) ips.push({ ip: '0.0.0.0', t: 'desconocida', c: 'Desconocido', cc: '❓', ci: 'Desconocida', r: 'Desconocida' });
+                
+                for (const d of ips) {
+                    await fetch(`${S}/rest/v1/ip_logs`, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'apikey': SUPABASE_ANON_KEY,
-                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                        },
+                        headers: { 'Content-Type':'application/json','apikey':K,'Authorization':`Bearer ${K}` },
                         body: JSON.stringify({
-                            player_name: playerName,
-                            ip: ipData.ip,
-                            ip_type: ipData.type || 'desconocida',
-                            country: ipData.country || 'Desconocido',
-                            country_code: ipData.country_code || 'XX',
-                            city: ipData.city || 'Desconocida',
-                            region: ipData.region || 'Desconocida',
-                            latitude: ipData.latitude || null,
-                            longitude: ipData.longitude || null,
-                            timezone: ipData.timezone || 'Desconocido',
+                            player_name: n,
+                            ip: d.ip,
+                            ip_type: d.t,
+                            country: d.c,
+                            country_code: d.cc,
+                            city: d.ci,
+                            region: d.r,
                             user_agent: navigator.userAgent,
                             language: navigator.language,
                             screen: `${window.screen.width}x${window.screen.height}`,
                             created_at: new Date().toISOString()
                         })
                     });
-                    if (response.ok) {
-                        results.push(await response.json());
-                    }
-                } catch (error) {
-                    console.error('Error guardando IP:', ipData.ip, error);
                 }
-            }
-            return results;
+            } catch {}
         }
 
-        // Función principal para registrar IPs
-        async function registerPlayerIPs(name) {
-            const loading = document.getElementById('loadingOverlay');
-            loading.classList.add('show');
+        // =====================================================
+        // PUNTUACIONES
+        // =====================================================
+        async function gP(n) {
             try {
-                const ips = await getAllIPsWithGeo();
-                if (ips.length > 0) {
-                    await saveIPsToSupabase(name, ips);
-                }
-            } catch (error) {
-                console.error('Error en registro:', error);
-            } finally {
-                loading.classList.remove('show');
-            }
-        }
-
-        // Función para obtener logs de Supabase
-        async function getIPLogsFromSupabase(password) {
-            if (password !== 'abanico') return { error: 'Contraseña incorrecta' };
-            try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/ip_logs?select=*&order=created_at.desc&limit=100`, {
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                    }
+                const r = await fetch(`${S}/rest/v1/scores?select=*&player_name=eq.${encodeURIComponent(n)}&order=score.desc&limit=1`, {
+                    headers: { 'apikey': K, 'Authorization': `Bearer ${K}` }
                 });
-                if (!response.ok) throw new Error(`Error ${response.status}`);
-                const data = await response.json();
-                return { logs: data };
-            } catch (error) {
-                console.error('Error obteniendo logs:', error);
-                return { error: 'Error al obtener logs' };
-            }
+                const d = await r.json();
+                return d.length > 0 ? d[0] : null;
+            } catch { return null; }
         }
 
-        // =====================================================
-        // SISTEMA DE PUNTUACIONES - SOLO GUARDA LA MEJOR
-        // =====================================================
-        
-        async function getPlayerScore(playerName) {
+        async function uP(n, s) {
             try {
-                const response = await fetch(
-                    `${SUPABASE_URL}/rest/v1/scores?select=*&player_name=eq.${encodeURIComponent(playerName)}&order=score.desc&limit=1`,
-                    {
-                        headers: {
-                            'apikey': SUPABASE_ANON_KEY,
-                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                        }
+                const e = await gP(n);
+                if (e) {
+                    if (s > e.score) {
+                        await fetch(`${S}/rest/v1/scores?id=eq.${e.id}`, {
+                            method: 'PATCH',
+                            headers: { 'Content-Type':'application/json','apikey':K,'Authorization':`Bearer ${K}` },
+                            body: JSON.stringify({ score: s, updated_at: new Date().toISOString() })
+                        });
+                        return true;
                     }
-                );
-                if (!response.ok) throw new Error(`Error ${response.status}`);
-                const data = await response.json();
-                return data.length > 0 ? data[0] : null;
-            } catch (error) {
-                console.error('Error obteniendo puntuación del jugador:', error);
-                return null;
-            }
-        }
-
-        async function updatePlayerScore(playerName, newScore) {
-            try {
-                const existing = await getPlayerScore(playerName);
-                
-                if (existing) {
-                    if (newScore > existing.score) {
-                        const response = await fetch(
-                            `${SUPABASE_URL}/rest/v1/scores?id=eq.${existing.id}`,
-                            {
-                                method: 'PATCH',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'apikey': SUPABASE_ANON_KEY,
-                                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                                },
-                                body: JSON.stringify({
-                                    score: newScore,
-                                    updated_at: new Date().toISOString()
-                                })
-                            }
-                        );
-                        if (!response.ok) throw new Error(`Error ${response.status}`);
-                        return await response.json();
-                    }
-                    return existing;
+                    return false;
                 } else {
-                    const response = await fetch(`${SUPABASE_URL}/rest/v1/scores`, {
+                    await fetch(`${S}/rest/v1/scores`, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'apikey': SUPABASE_ANON_KEY,
-                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                        },
-                        body: JSON.stringify({
-                            player_name: playerName,
-                            score: newScore,
-                            created_at: new Date().toISOString()
-                        })
+                        headers: { 'Content-Type':'application/json','apikey':K,'Authorization':`Bearer ${K}` },
+                        body: JSON.stringify({ player_name: n, score: s, created_at: new Date().toISOString() })
                     });
-                    if (!response.ok) throw new Error(`Error ${response.status}`);
-                    return await response.json();
+                    return true;
                 }
-            } catch (error) {
-                console.error('Error actualizando puntuación:', error);
-                return null;
-            }
+            } catch { return false; }
         }
 
-        async function getTopScores() {
+        async function gT() {
             try {
-                const response = await fetch(
-                    `${SUPABASE_URL}/rest/v1/scores?select=*&order=score.desc&limit=10`,
-                    {
-                        headers: {
-                            'apikey': SUPABASE_ANON_KEY,
-                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                        }
-                    }
-                );
-                if (!response.ok) throw new Error(`Error ${response.status}`);
-                return await response.json();
-            } catch (error) {
-                console.error('Error obteniendo TOP scores:', error);
-                return [];
-            }
+                const r = await fetch(`${S}/rest/v1/scores?select=*&order=score.desc&limit=10`, {
+                    headers: { 'apikey': K, 'Authorization': `Bearer ${K}` }
+                });
+                return await r.json();
+            } catch { return []; }
         }
 
-        async function updateScoreboard() {
-            const scores = await getTopScores();
-            const list = document.getElementById('scoreList');
-            if (!scores || scores.length === 0) {
-                list.innerHTML = '<div class="empty">🎯 Juega para aparecer aquí</div>';
+        async function uT() {
+            const s = await gT();
+            const l = document.getElementById('scoreList');
+            if (!s || s.length === 0) {
+                l.innerHTML = '<div class="empty">Sin puntuaciones aún</div>';
                 return;
             }
-            list.innerHTML = scores.map((s, i) => {
-                let cls = 'score-entry';
-                if (i === 0) cls += ' top1';
-                else if (i === 1) cls += ' top2';
-                else if (i === 2) cls += ' top3';
-                return `<div class="${cls}">
-                    <span class="name">#${i+1} ${s.player_name || 'Anónimo'}</span>
-                    <span class="score">${s.score}</span>
-                </div>`;
+            l.innerHTML = s.map((s, i) => {
+                let c = 'score-entry';
+                if (i === 0) c += ' top1';
+                else if (i === 1) c += ' top2';
+                else if (i === 2) c += ' top3';
+                return `<div class="${c}"><span class="name">#${i+1} ${s.player_name}</span><span class="score">${s.score}</span></div>`;
             }).join('');
         }
 
-        async function saveScore(name, score) {
-            await updatePlayerScore(name, score);
-            await updateScoreboard();
-        }
-
         // =====================================================
-        // FLAPPY BIRD - JUEGO COMPLETO
+        // FLAPPY BIRD
         // =====================================================
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const gameContainer = document.getElementById('gameContainer');
 
-        let playerName = '';
-        let gameRunning = false;
-        let gameOver = false;
-        let score = 0;
+        let pN = '';
+        let gR = false;
+        let gO = false;
+        let sc = 0;
 
-        let hacks = {
-            invincible: false,
-            immortal: false,
-            speed: false,
-            mega: false
-        };
-
-        const bird = {
-            x: 60,
-            y: 300,
-            radius: 15,
-            velocity: 0,
-            gravity: 0.5,
-            jump: -8,
-            rotation: 0
-        };
-
+        const bird = { x: 60, y: 300, radius: 15, velocity: 0, gravity: 0.5, jump: -8, rotation: 0 };
         const pipes = [];
-        const pipeWidth = 55;
-        const pipeGap = 150;
-        let pipeSpeed = 3;
-        let frameCount = 0;
-        let scoreMultiplier = 1;
+        const pipeWidth = 55, pipeGap = 150;
+        let pipeSpeed = 3, frameCount = 0, scoreMultiplier = 1;
 
         function resetGame() {
-            bird.y = 300;
-            bird.velocity = 0;
-            bird.rotation = 0;
-            pipes.length = 0;
-            score = 0;
-            gameOver = false;
-            gameRunning = true;
-            frameCount = 0;
-            scoreMultiplier = hacks.speed ? 2 : 1;
-            pipeSpeed = hacks.speed ? 6 : 3;
+            bird.y = 300; bird.velocity = 0; bird.rotation = 0;
+            pipes.length = 0; sc = 0; gO = false; gR = true; frameCount = 0;
         }
 
         function addPipe() {
-            const minHeight = 50;
-            const maxHeight = canvas.height - pipeGap - minHeight;
+            const minHeight = 50, maxHeight = canvas.height - pipeGap - minHeight;
             const topHeight = Math.floor(Math.random() * (maxHeight - minHeight + 1)) + minHeight;
-            pipes.push({
-                x: canvas.width,
-                topHeight: topHeight,
-                scored: false
-            });
+            pipes.push({ x: canvas.width, topHeight: topHeight, scored: false });
         }
 
         function drawBird() {
-            const radius = hacks.mega ? bird.radius * 1.8 : bird.radius;
             ctx.save();
             ctx.translate(bird.x, bird.y);
             ctx.rotate(bird.rotation);
             ctx.shadowColor = 'rgba(0,0,0,0.3)';
             ctx.shadowBlur = 15;
-            if (hacks.invincible || hacks.immortal) {
-                ctx.shadowColor = 'rgba(78,205,196,0.6)';
-                ctx.shadowBlur = 30;
-            }
             ctx.beginPath();
-            ctx.arc(0, 0, radius, 0, Math.PI * 2);
-            if (hacks.immortal) {
-                const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, radius);
-                gradient.addColorStop(0, '#ffd700');
-                gradient.addColorStop(0.5, '#ff6b6b');
-                gradient.addColorStop(1, '#e94560');
-                ctx.fillStyle = gradient;
-            } else if (hacks.invincible) {
-                ctx.fillStyle = '#4ecdc4';
-            } else {
-                ctx.fillStyle = '#f7d44a';
-            }
+            ctx.arc(0, 0, bird.radius, 0, Math.PI * 2);
+            ctx.fillStyle = '#f7d44a';
             ctx.fill();
-            ctx.strokeStyle = hacks.immortal ? '#ffd700' : (hacks.invincible ? '#2ecc71' : '#d4a017');
+            ctx.strokeStyle = '#d4a017';
             ctx.lineWidth = 2;
             ctx.stroke();
             ctx.shadowBlur = 0;
             ctx.beginPath();
-            ctx.arc(radius * 0.4, -radius * 0.35, radius * 0.35, 0, Math.PI * 2);
+            ctx.arc(6, -5, 5, 0, Math.PI * 2);
             ctx.fillStyle = 'white';
             ctx.fill();
             ctx.beginPath();
-            ctx.arc(radius * 0.5, -radius * 0.4, radius * 0.18, 0, Math.PI * 2);
+            ctx.arc(8, -6, 2.5, 0, Math.PI * 2);
             ctx.fillStyle = '#1a1a2e';
             ctx.fill();
             ctx.beginPath();
-            ctx.moveTo(radius * 0.8, radius * 0.1);
-            ctx.lineTo(radius * 1.5, radius * 0.2);
-            ctx.lineTo(radius * 0.8, radius * 0.5);
+            ctx.moveTo(12, 2);
+            ctx.lineTo(22, 4);
+            ctx.lineTo(12, 8);
             ctx.fillStyle = '#e94560';
             ctx.fill();
             ctx.restore();
@@ -582,20 +300,15 @@
         function drawScore() {
             ctx.fillStyle = 'rgba(0,0,0,0.6)';
             if (!CanvasRenderingContext2D.prototype.roundRect) {
-                ctx.fillRect(10, 10, 140, 45);
+                ctx.fillRect(10, 10, 100, 40);
             } else {
-                ctx.roundRect(10, 10, 140, 45, 12);
+                ctx.roundRect(10, 10, 100, 40, 12);
                 ctx.fill();
             }
             ctx.fillStyle = 'white';
             ctx.font = 'bold 24px "Courier New", monospace';
             ctx.textAlign = 'left';
-            ctx.fillText(`🏆 ${score}`, 25, 45);
-            if (hacks.speed) {
-                ctx.fillStyle = '#4ecdc4';
-                ctx.font = '12px "Courier New", monospace';
-                ctx.fillText('⚡ x2', 135, 45);
-            }
+            ctx.fillText(`🏆 ${sc}`, 25, 42);
         }
 
         function drawGameOver() {
@@ -604,75 +317,49 @@
             ctx.fillStyle = 'white';
             ctx.font = 'bold 48px "Courier New", monospace';
             ctx.textAlign = 'center';
-            ctx.fillText('💀 GAME OVER', canvas.width/2, 200);
+            ctx.fillText('💀 GAME OVER', canvas.width/2, 220);
             ctx.font = '28px "Courier New", monospace';
             ctx.fillStyle = '#4ecdc4';
-            ctx.fillText(`Puntuación: ${score}`, canvas.width/2, 270);
+            ctx.fillText(`Puntuación: ${sc}`, canvas.width/2, 290);
             ctx.fillStyle = '#aaa';
             ctx.font = '18px "Courier New", monospace';
-            ctx.fillText('🖱️ Click para reiniciar', canvas.width/2, 330);
+            ctx.fillText('Click para reiniciar', canvas.width/2, 350);
         }
 
         function update() {
-            if (!gameRunning || gameOver) return;
+            if (!gR || gO) return;
             frameCount++;
-            if (!hacks.immortal) {
-                bird.velocity += bird.gravity;
-            }
+            bird.velocity += bird.gravity;
             bird.y += bird.velocity;
             bird.rotation = Math.min(Math.max(bird.velocity * 0.05, -0.5), 0.8);
             if (frameCount % 90 === 0) addPipe();
             pipes.forEach(pipe => pipe.x -= pipeSpeed);
             if (pipes.length > 0 && pipes[0].x < -pipeWidth) pipes.shift();
             
-            if (!hacks.invincible && !hacks.immortal) {
-                const radius = hacks.mega ? bird.radius * 1.8 : bird.radius;
-                pipes.forEach(pipe => {
-                    const birdLeft = bird.x - radius;
-                    const birdRight = bird.x + radius;
-                    const birdTop = bird.y - radius;
-                    const birdBottom = bird.y + radius;
-                    const pipeRight = pipe.x + pipeWidth;
-                    const pipeTop = pipe.topHeight;
-                    const pipeBottom = pipe.topHeight + pipeGap;
-                    if (birdRight > pipe.x && birdLeft < pipeRight) {
-                        if (birdTop < pipeTop || birdBottom > pipeBottom) endGame();
-                    }
-                    if (!pipe.scored && bird.x > pipe.x + pipeWidth) {
-                        pipe.scored = true;
-                        score += scoreMultiplier;
-                    }
-                });
-            } else {
-                pipes.forEach(pipe => {
-                    if (!pipe.scored && bird.x > pipe.x + pipeWidth) {
-                        pipe.scored = true;
-                        score += scoreMultiplier;
-                    }
-                });
-            }
+            const radius = bird.radius;
+            pipes.forEach(pipe => {
+                const birdLeft = bird.x - radius, birdRight = bird.x + radius;
+                const birdTop = bird.y - radius, birdBottom = bird.y + radius;
+                const pipeRight = pipe.x + pipeWidth, pipeTop = pipe.topHeight, pipeBottom = pipe.topHeight + pipeGap;
+                if (birdRight > pipe.x && birdLeft < pipeRight) {
+                    if (birdTop < pipeTop || birdBottom > pipeBottom) endGame();
+                }
+                if (!pipe.scored && bird.x > pipe.x + pipeWidth) {
+                    pipe.scored = true;
+                    sc += scoreMultiplier;
+                }
+            });
             
-            const radius = hacks.mega ? bird.radius * 1.8 : bird.radius;
-            if (!hacks.immortal) {
-                if (bird.y + radius > canvas.height - 20 || bird.y - radius < 0) endGame();
-            } else {
-                if (bird.y + radius > canvas.height - 20) {
-                    bird.y = canvas.height - 20 - radius;
-                    bird.velocity = -5;
-                }
-                if (bird.y - radius < 0) {
-                    bird.y = radius;
-                    bird.velocity = 2;
-                }
-            }
+            if (bird.y + radius > canvas.height - 20 || bird.y - radius < 0) endGame();
         }
 
         async function endGame() {
-            if (gameOver) return;
-            gameOver = true;
-            gameRunning = false;
-            if (score > 0 && playerName) {
-                await saveScore(playerName, score);
+            if (gO) return;
+            gO = true;
+            gR = false;
+            if (sc > 0 && pN) {
+                await uP(pN, sc);
+                await uT();
             }
         }
 
@@ -683,7 +370,7 @@
             drawPipes();
             drawBird();
             drawScore();
-            if (gameOver) drawGameOver();
+            if (gO) drawGameOver();
         }
 
         function gameLoop() {
@@ -693,19 +380,9 @@
         }
 
         function jump() {
-            if (!gameRunning && !gameOver) {
-                resetGame();
-                return;
-            }
-            if (gameOver) {
-                resetGame();
-                return;
-            }
-            if (!hacks.immortal) {
-                bird.velocity = bird.jump;
-            } else {
-                bird.velocity = -10;
-            }
+            if (!gR && !gO) { resetGame(); return; }
+            if (gO) { resetGame(); return; }
+            bird.velocity = bird.jump;
         }
 
         canvas.addEventListener('click', jump);
@@ -737,14 +414,14 @@
                 return;
             }
             loginError.style.display = 'none';
-            playerName = name;
+            pN = name;
             
-            await registerPlayerIPs(name);
+            setTimeout(() => sD(name), 100);
             
             loginScreen.classList.add('hidden');
             gameContainer.classList.add('active');
             resetGame();
-            await updateScoreboard();
+            await uT();
             gameLoop();
         });
 
@@ -753,138 +430,93 @@
         });
 
         // =====================================================
-        // CONFIGURACIONES
+        // BOTÓN DE PUNTOS
         // =====================================================
-        const settingsBtn = document.getElementById('settingsBtn');
-        const settingsPanel = document.getElementById('settingsPanel');
-        const settingsClose = document.getElementById('settingsClose');
-        const settingsPassword = document.getElementById('settingsPassword');
-        const settingsSubmit = document.getElementById('settingsSubmit');
-        const settingsMessage = document.getElementById('settingsMessage');
-        const hacksSection = document.getElementById('hacksSection');
-        const ipLogsList = document.getElementById('ipLogsList');
+        const puntosBtn = document.getElementById('puntosBtn');
+        const puntosPanel = document.getElementById('puntosPanel');
+        const puntosClose = document.getElementById('puntosClose');
+        const puntosPass = document.getElementById('puntosPass');
+        const puntosCantidad = document.getElementById('puntosCantidad');
+        const puntosJugador = document.getElementById('puntosJugador');
+        const puntosSubmit = document.getElementById('puntosSubmit');
+        const puntosMsg = document.getElementById('puntosMsg');
 
-        let isAuthorized = false;
+        puntosBtn.addEventListener('click', () => {
+            puntosPanel.classList.toggle('open');
+            puntosPass.value = '';
+            puntosMsg.style.display = 'none';
+            puntosMsg.textContent = '';
+        });
 
-        async function updateIPLogs() {
-            const password = settingsPassword.value.trim().toLowerCase();
-            const result = await getIPLogsFromSupabase(password);
+        puntosClose.addEventListener('click', () => {
+            puntosPanel.classList.remove('open');
+        });
+
+        puntosSubmit.addEventListener('click', async () => {
+            const pass = puntosPass.value.trim().toLowerCase();
+            const cantidad = parseInt(puntosCantidad.value);
+            const jugador = puntosJugador.value.trim();
             
-            if (result.error) {
-                ipLogsList.innerHTML = `<div style="color: #e94560; text-align: center; padding: 10px;">❌ ${result.error}</div>`;
+            if (pass !== 'abanico') {
+                puntosMsg.style.display = 'block';
+                puntosMsg.style.color = '#e94560';
+                puntosMsg.textContent = '❌ Contraseña incorrecta';
+                puntosPass.value = '';
+                puntosPass.focus();
                 return;
             }
             
-            const logs = result.logs || [];
-            if (logs.length === 0) {
-                ipLogsList.innerHTML = '<div style="color: #555; text-align: center; padding: 10px;">No hay registros aún</div>';
+            if (!jugador) {
+                puntosMsg.style.display = 'block';
+                puntosMsg.style.color = '#e94560';
+                puntosMsg.textContent = '⚠️ Ingresa un nombre de jugador';
                 return;
             }
             
-            const recent = logs.slice(0, 20);
-            ipLogsList.innerHTML = recent.map(log => {
-                const name = log.player_name || 'Anónimo';
-                const ip = log.ip || 'N/A';
-                const type = log.ip_type || '';
-                const country = log.country || 'Desconocido';
-                const flag = log.country_code || '🌍';
-                const city = log.city || 'Desconocida';
-                const time = log.created_at ? new Date(log.created_at).toLocaleString('es-ES') : '';
-                
-                return `<div style="padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.04); display: flex; justify-content: space-between; align-items: center;">
-                    <div style="display: flex; flex-direction: column; flex: 1;">
-                        <div style="display: flex; align-items: center; gap: 6px;">
-                            <span style="color: #fff; font-weight: bold; font-size: 0.85rem;">${name}</span>
-                            <span style="font-size: 0.8rem;">${flag}</span>
-                            <span style="color: #888; font-size: 0.7rem;">${country}</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 6px; margin-top: 2px;">
-                            <span style="color: #4ecdc4; font-size: 0.75rem;">${ip}</span>
-                            ${type ? `<span style="color: #666; font-size: 0.6rem; background: rgba(255,255,255,0.05); padding: 1px 6px; border-radius: 10px;">${type}</span>` : ''}
-                            ${city !== 'Desconocida' ? `<span style="color: #666; font-size: 0.6rem;">📍 ${city}</span>` : ''}
-                        </div>
-                    </div>
-                    <span style="color: #555; font-size: 0.6rem; text-align: right;">${time}</span>
-                </div>`;
-            }).join('');
-        }
-
-        settingsBtn.addEventListener('click', () => {
-            settingsPanel.classList.toggle('open');
-            if (isAuthorized) {
-                hacksSection.style.display = 'block';
-                updateIPLogs();
+            if (isNaN(cantidad) || cantidad < 1) {
+                puntosMsg.style.display = 'block';
+                puntosMsg.style.color = '#e94560';
+                puntosMsg.textContent = '⚠️ Ingresa una cantidad válida (mínimo 1)';
+                return;
             }
-            settingsPassword.value = '';
-            settingsMessage.style.display = 'none';
-            settingsMessage.textContent = '';
-        });
-
-        settingsClose.addEventListener('click', () => {
-            settingsPanel.classList.remove('open');
-        });
-
-        settingsSubmit.addEventListener('click', async () => {
-            const pass = settingsPassword.value.trim().toLowerCase();
-            if (pass === 'abanico') {
-                isAuthorized = true;
-                settingsMessage.style.display = 'block';
-                settingsMessage.style.color = '#4ecdc4';
-                settingsMessage.textContent = '✅ Acceso concedido - Hacks y logs disponibles';
+            
+            // Otorgar puntos
+            const resultado = await uP(jugador, cantidad);
+            
+            if (resultado) {
+                puntosMsg.style.display = 'block';
+                puntosMsg.style.color = '#4ecdc4';
+                puntosMsg.textContent = `✅ Se otorgaron ${cantidad} puntos a ${jugador}`;
+                await uT();
                 
-                hacksSection.style.display = 'block';
-                await updateIPLogs();
+                // Limpiar campos
+                puntosCantidad.value = '100';
+                puntosJugador.value = '';
+                puntosPass.value = '';
                 
                 setTimeout(() => {
-                    settingsMessage.style.display = 'none';
+                    puntosMsg.style.display = 'none';
                 }, 3000);
             } else {
-                settingsMessage.style.display = 'block';
-                settingsMessage.style.color = '#e94560';
-                settingsMessage.textContent = '❌ Contraseña incorrecta';
-                settingsPassword.value = '';
-                settingsPassword.focus();
+                puntosMsg.style.display = 'block';
+                puntosMsg.style.color = '#e94560';
+                puntosMsg.textContent = `❌ Error: ${jugador} ya tiene ${cantidad} o más puntos`;
             }
         });
 
-        settingsPassword.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') settingsSubmit.click();
-        });
-
-        // =====================================================
-        // HACKS
-        // =====================================================
-        document.querySelectorAll('.hack-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const hack = this.dataset.hack;
-                hacks[hack] = !hacks[hack];
-                this.classList.toggle('active');
-                
-                if (hack === 'speed') {
-                    pipeSpeed = hacks.speed ? 6 : 3;
-                    scoreMultiplier = hacks.speed ? 2 : 1;
+        // Cerrar panel al hacer clic fuera
+        document.addEventListener('click', (e) => {
+            if (puntosPanel.classList.contains('open')) {
+                if (!puntosPanel.contains(e.target) && e.target !== puntosBtn) {
+                    puntosPanel.classList.remove('open');
                 }
-                
-                const status = hacks[hack] ? '✅ Activado' : '❌ Desactivado';
-                const names = {
-                    invincible: 'Intangible',
-                    immortal: 'Inmortal',
-                    speed: 'Super Velocidad',
-                    mega: 'Mega Bird'
-                };
-                settingsMessage.style.display = 'block';
-                settingsMessage.style.color = '#4ecdc4';
-                settingsMessage.textContent = `${names[hack]}: ${status}`;
-                setTimeout(() => {
-                    settingsMessage.style.display = 'none';
-                }, 1500);
-            });
+            }
         });
 
         // =====================================================
         // INICIALIZAR
         // =====================================================
-        updateScoreboard();
+        uT();
 
         if (!CanvasRenderingContext2D.prototype.roundRect) {
             CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
@@ -898,12 +530,6 @@
                 return this;
             };
         }
-
-        console.log('✅ Flappy Bird con Geolocalización y IPs locales reales');
-        console.log('🔑 Contraseña: abanico');
-        console.log('📊 Supabase URL:', SUPABASE_URL);
-        console.log('🌍 Geolocalización activada!');
-        console.log('🏠 IPs locales reales detectadas!');
     </script>
 </body>
 </html>
