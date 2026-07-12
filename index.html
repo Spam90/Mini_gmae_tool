@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Bird</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}body{background:#2d2d2d;display:flex;justify-content:center;align-items:center;min-height:100vh;font-family:'Courier New',monospace;overflow:hidden;user-select:none}#loginScreen{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.92);display:flex;justify-content:center;align-items:center;z-index:1000;backdrop-filter:blur(10px)}#loginScreen.hidden{display:none}.login-box{background:#1a1a2e;padding:45px 50px;border-radius:25px;border:2px solid #e94560;box-shadow:0 0 60px rgba(233,69,96,0.3);text-align:center;max-width:420px;width:90%;animation:fadeIn 0.5s ease}@keyframes fadeIn{from{opacity:0;transform:scale(0.9)}to{opacity:1;transform:scale(1)}}.login-box h2{color:#fff;font-size:2rem;margin-bottom:8px}.login-box .emoji-bird{font-size:3rem;display:block;margin-bottom:10px}.login-box p{color:#aaa;font-size:0.95rem;margin-bottom:25px}.login-box input{width:100%;padding:14px 18px;border:2px solid #333;border-radius:12px;background:#0d0d1a;color:white;font-size:1.1rem;outline:none;transition:0.3s;margin-bottom:15px;font-family:'Courier New',monospace}.login-box input:focus{border-color:#e94560;box-shadow:0 0 25px rgba(233,69,96,0.2)}.login-box button{width:100%;padding:14px;background:#e94560;color:white;border:none;border-radius:12px;font-size:1.1rem;font-weight:bold;cursor:pointer;transition:0.3s;text-transform:uppercase;letter-spacing:2px;font-family:'Courier New',monospace}.login-box button:hover{background:#c73652;transform:scale(1.02);box-shadow:0 0 30px rgba(233,69,96,0.3)}.login-error{color:#e94560;font-size:0.85rem;margin-top:10px;display:none}#gameContainer{position:relative;display:none}#gameContainer.active{display:block}canvas{display:block;margin:0 auto;border:3px solid #e94560;border-radius:12px;box-shadow:0 0 50px rgba(233,69,96,0.15);background:#70c5ce;cursor:pointer;max-width:100%}#settingsBtn{position:fixed;top:20px;right:20px;background:rgba(0,0,0,0.75);color:#fff;border:1px solid #e94560;padding:10px 18px;border-radius:10px;cursor:pointer;font-size:0.9rem;z-index:100;backdrop-filter:blur(4px);transition:0.3s;font-family:'Courier New',monospace}#settingsBtn:hover{background:#e94560;box-shadow:0 0 30px rgba(233,69,96,0.4);transform:scale(1.05)}#settingsPanel{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);background:rgba(15,15,35,0.98);padding:35px;border-radius:25px;border:2px solid #e94560;z-index:200;min-width:400px;max-width:92%;max-height:85vh;overflow-y:auto;backdrop-filter:blur(15px);box-shadow:0 0 80px rgba(0,0,0,0.95);transition:0.3s cubic-bezier(0.34,1.56,0.64,1)}#settingsPanel.open{transform:translate(-50%,-50%) scale(1)}#settingsPanel::-webkit-scrollbar{width:6px}#settingsPanel::-webkit-scrollbar-track{background:rgba(255,255,255,0.05);border-radius:10px}#settingsPanel::-webkit-scrollbar-thumb{background:#e94560;border-radius:10px}#settingsPanel h3{color:#fff;margin-bottom:20px;text-align:center;font-size:1.5rem;border-bottom:2px solid #333;padding-bottom:15px}#settingsPanel .subtitle{color:#888;text-align:center;font-size:0.8rem;margin-bottom:20px}.settings-section{background:rgba(255,255,255,0.03);border-radius:12px;padding:15px;margin-bottom:15px;border:1px solid rgba(255,255,255,0.05)}.settings-section h4{color:#4ecdc4;font-size:0.9rem;margin-bottom:10px;text-transform:uppercase;letter-spacing:1px}#settingsPanel input[type="password"]{width:100%;padding:12px 16px;border:2px solid #333;border-radius:10px;background:#0d0d1a;color:white;font-size:1rem;margin-bottom:12px;outline:none;transition:0.3s;font-family:'Courier New',monospace}#settingsPanel input[type="password"]:focus{border-color:#e94560;box-shadow:0 0 20px rgba(233,69,96,0.15)}#settingsPanel .btn-primary{width:100%;padding:12px;background:#e94560;color:white;border:none;border-radius:10px;font-weight:bold;cursor:pointer;transition:0.3s;font-size:1rem;font-family:'Courier New',monospace}#settingsPanel .btn-primary:hover{background:#c73652;transform:scale(1.02)}.settings-close{position:absolute;top:12px;right:18px;color:#666;font-size:1.8rem;cursor:pointer;transition:0.3s;background:none;border:none;font-family:'Courier New',monospace}.settings-close:hover{color:#e94560;transform:rotate(90deg)}#settingsMessage{color:#4ecdc4;text-align:center;margin-top:12px;font-size:0.9rem;display:none;padding:10px;background:rgba(78,205,196,0.1);border-radius:8px;border:1px solid rgba(78,205,196,0.2)}.hacks-container{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:5px}.hack-btn{padding:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#ccc;cursor:pointer;transition:0.3s;font-size:0.85rem;font-family:'Courier New',monospace}.hack-btn:hover{background:rgba(233,69,96,0.2);border-color:#e94560;color:#fff;transform:scale(1.03)}.hack-btn.active{background:rgba(78,205,196,0.2);border-color:#4ecdc4;color:#4ecdc4;box-shadow:0 0 20px rgba(78,205,196,0.1)}.hack-btn .hack-icon{display:block;font-size:1.3rem;margin-bottom:3px}#scoreboard{position:fixed;top:80px;right:20px;background:rgba(0,0,0,0.85);backdrop-filter:blur(10px);border:1px solid rgba(233,69,96,0.25);border-radius:15px;padding:18px 22px;min-width:220px;z-index:50;max-height:65vh;overflow-y:auto;box-shadow:0 10px 40px rgba(0,0,0,0.5)}#scoreboard::-webkit-scrollbar{width:4px}#scoreboard::-webkit-scrollbar-track{background:rgba(255,255,255,0.05);border-radius:10px}#scoreboard::-webkit-scrollbar-thumb{background:#e94560;border-radius:10px}#scoreboard h4{color:#e94560;text-align:center;margin-bottom:12px;font-size:1rem;letter-spacing:2px;border-bottom:1px solid #333;padding-bottom:10px}.score-entry{color:#ccc;padding:6px 0;display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.85rem}.score-entry .name{color:#fff;font-weight:bold}.score-entry .score{color:#4ecdc4;font-weight:bold}.score-entry.top1{background:rgba(255,215,0,0.1);border-radius:4px;padding:6px 8px}.score-entry.top1 .name{color:#ffd700}.score-entry.top1 .score{color:#ffd700}.score-entry.top2{background:rgba(192,192,192,0.08);border-radius:4px;padding:6px 8px}.score-entry.top2 .name{color:#c0c0c0}.score-entry.top2 .score{color:#c0c0c0}.score-entry.top3{background:rgba(205,127,50,0.08);border-radius:4px;padding:6px 8px}.score-entry.top3 .name{color:#cd7f32}.score-entry.top3 .score{color:#cd7f32}#scoreboard .empty{color:#555;text-align:center;font-style:italic;padding:20px 0;font-size:0.85rem}#loadingOverlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:none;justify-content:center;align-items:center;z-index:9999;color:#fff;font-size:1.2rem;font-family:'Courier New',monospace}#loadingOverlay.show{display:flex}.spinner{width:40px;height:40px;border:4px solid rgba(255,255,255,0.1);border-top:4px solid #e94560;border-radius:50%;animation:spin 0.8s linear infinite;margin-right:15px}@keyframes spin{to{transform:rotate(360deg)}}@media(max-width:700px){#scoreboard{top:75px;right:10px;left:10px;min-width:auto;max-height:35vh;padding:12px 15px}.login-box{padding:30px 20px}#settingsPanel{min-width:auto;padding:25px;max-height:80vh}#settingsBtn{top:10px;right:10px;padding:6px 12px;font-size:0.75rem}.hacks-container{grid-template-columns:1fr}}@media(max-width:500px){#scoreboard{max-height:30vh}#scoreboard h4{font-size:0.8rem}.score-entry{font-size:0.75rem;padding:4px 0}}
+    </style>
+</head>
+<body>
+
+    <div id="loadingOverlay">
+        <div class="spinner"></div>
+        <span>Conectando con Supabase...</span>
+    </div>
+
+    <div id="loginScreen">
+        <div class="login-box">
+            <span class="emoji-bird">🐦</span>
+            <h2>Flappy Bird</h2>
+            <p>Ingresa tu nombre para jugar y aparecer en el top</p>
+            <input type="text" id="playerName" placeholder="Tu nombre..." maxlength="20" autofocus>
+            <button id="startGameBtn">¡Volar!</button>
+            <div class="login-error" id="loginError">⚠️ Por favor ingresa un nombre</div>
+        </div>
+    </div>
+
+    <button id="settingsBtn">⚙️ Config</button>
+
+    <div id="settingsPanel">
+        <button class="settings-close" id="settingsClose">✕</button>
+        <h3>🔐 Panel de Control</h3>
+        <div class="subtitle">Ingresa la contraseña para acceder</div>
+        
+        <input type="password" id="settingsPassword" placeholder="Contraseña">
+        <button class="btn-primary" id="settingsSubmit">Acceder</button>
+        <div id="settingsMessage"></div>
+
+        <div id="hacksSection" style="display: none; margin-top: 20px;">
+            <div class="settings-section">
+                <h4>🎮 Hacks</h4>
+                <div class="hacks-container">
+                    <button class="hack-btn" data-hack="invincible">
+                        <span class="hack-icon">🛡️</span>
+                        Intangible
+                    </button>
+                    <button class="hack-btn" data-hack="immortal">
+                        <span class="hack-icon">♾️</span>
+                        Inmortal
+                    </button>
+                    <button class="hack-btn" data-hack="speed">
+                        <span class="hack-icon">⚡</span>
+                        Super Velocidad
+                    </button>
+                    <button class="hack-btn" data-hack="mega">
+                        <span class="hack-icon">💪</span>
+                        Mega Bird
+                    </button>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h4>🕵️ Registro de IPs</h4>
+                <div id="ipLogsList" style="max-height: 200px; overflow-y: auto; font-size: 0.8rem; color: #aaa;">
+                    <div style="color: #555; text-align: center; padding: 10px;">Cargando...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="scoreboard">
+        <h4>🏆 TOP 10</h4>
+        <div id="scoreList">
+            <div class="empty">Sin puntuaciones aún</div>
+        </div>
+    </div>
+
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="400" height="600"></canvas>
+    </div>
+
+    <script>
+        // =====================================================
+        // CONFIGURACIÓN DE SUPABASE (YA CONFIGURADO)
+        // =====================================================
+        const SUPABASE_URL = 'https://eanpolhhgyjseuoqsdnp.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhbnBvbGhoZ3lqc2V1b3FzZG5wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4MDgwNjgsImV4cCI6MjA5OTM4NDA2OH0.HmRwWh2mkTu0mFDQv6nD8CCNEq01ayY9wwnKnspBEm4';
+        // =====================================================
+
+        // =====================================================
+        // SISTEMA DE REGISTRO DE IP CON SUPABASE
+        // =====================================================
+        
+        async function getIP() {
+            const apis = [
+                'https://api.ipify.org?format=json',
+                'https://api.my-ip.io/ip.json',
+                'https://ipapi.co/json/'
+            ];
+            for (const api of apis) {
+                try {
+                    const response = await fetch(api);
+                    const data = await response.json();
+                    const ip = data.ip || data.ipAddress || null;
+                    if (ip) return ip;
+                } catch (e) { continue; }
+            }
+            return null;
+        }
+
+        async function saveIPToSupabase(playerName, ip) {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/ip_logs`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    },
+                    body: JSON.stringify({
+                        player_name: playerName,
+                        ip: ip,
+                        user_agent: navigator.userAgent,
+                        language: navigator.language,
+                        screen: `${window.screen.width}x${window.screen.height}`,
+                        created_at: new Date().toISOString()
+                    })
+                });
+                if (!response.ok) throw new Error(`Error ${response.status}`);
+                return await response.json();
+            } catch (error) {
+                console.error('Error guardando IP:', error);
+                saveIPLocal(playerName, ip);
+                return null;
+            }
+        }
+
+        function saveIPLocal(playerName, ip) {
+            try {
+                let logs = JSON.parse(localStorage.getItem('ip_logs_fallback') || '[]');
+                logs.push({
+                    player_name: playerName,
+                    ip: ip,
+                    timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19)
+                });
+                if (logs.length > 500) logs = logs.slice(-500);
+                localStorage.setItem('ip_logs_fallback', JSON.stringify(logs));
+            } catch (e) {}
+        }
+
+        async function getIPLogsFromSupabase(password) {
+            if (password !== 'abanico') return { error: 'Contraseña incorrecta' };
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/ip_logs?select=*&order=created_at.desc&limit=100`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                if (!response.ok) throw new Error(`Error ${response.status}`);
+                const data = await response.json();
+                return { logs: data };
+            } catch (error) {
+                console.error('Error obteniendo logs:', error);
+                try {
+                    const logs = JSON.parse(localStorage.getItem('ip_logs_fallback') || '[]');
+                    return { logs: logs.reverse() };
+                } catch (e) {
+                    return { error: 'Error al obtener logs' };
+                }
+            }
+        }
+
+        async function registerPlayerIP(name) {
+            const loading = document.getElementById('loadingOverlay');
+            loading.classList.add('show');
+            try {
+                const ip = await getIP();
+                if (ip) await saveIPToSupabase(name, ip);
+            } catch (error) {
+                console.error('Error en registro:', error);
+            } finally {
+                loading.classList.remove('show');
+            }
+        }
+
+        // =====================================================
+        // SISTEMA DE PUNTUACIONES CON SUPABASE
+        // =====================================================
+        
+        async function saveScoreToSupabase(name, score) {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/scores`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    },
+                    body: JSON.stringify({
+                        player_name: name,
+                        score: score,
+                        created_at: new Date().toISOString()
+                    })
+                });
+                if (!response.ok) throw new Error(`Error ${response.status}`);
+                return await response.json();
+            } catch (error) {
+                console.error('Error guardando puntuación:', error);
+                saveScoreLocal(name, score);
+                return null;
+            }
+        }
+
+        function saveScoreLocal(name, score) {
+            try {
+                let scores = JSON.parse(localStorage.getItem('scores_fallback') || '[]');
+                scores.push({ player_name: name, score: score, created_at: new Date().toISOString() });
+                scores.sort((a, b) => b.score - a.score);
+                if (scores.length > 10) scores.length = 10;
+                localStorage.setItem('scores_fallback', JSON.stringify(scores));
+                updateScoreboardLocal();
+            } catch (e) {}
+        }
+
+        async function getScoresFromSupabase() {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/scores?select=*&order=score.desc&limit=10`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                if (!response.ok) throw new Error(`Error ${response.status}`);
+                return await response.json();
+            } catch (error) {
+                console.error('Error obteniendo puntuaciones:', error);
+                try {
+                    return JSON.parse(localStorage.getItem('scores_fallback') || '[]');
+                } catch (e) {
+                    return [];
+                }
+            }
+        }
+
+        async function updateScoreboard() {
+            const scores = await getScoresFromSupabase();
+            const list = document.getElementById('scoreList');
+            if (!scores || scores.length === 0) {
+                list.innerHTML = '<div class="empty">🎯 Juega para aparecer aquí</div>';
+                return;
+            }
+            list.innerHTML = scores.map((s, i) => {
+                let cls = 'score-entry';
+                if (i === 0) cls += ' top1';
+                else if (i === 1) cls += ' top2';
+                else if (i === 2) cls += ' top3';
+                return `<div class="${cls}">
+                    <span class="name">#${i+1} ${s.player_name || s.name || 'Anónimo'}</span>
+                    <span class="score">${s.score}</span>
+                </div>`;
+            }).join('');
+        }
+
+        function updateScoreboardLocal() {
+            try {
+                const scores = JSON.parse(localStorage.getItem('scores_fallback') || '[]');
+                const list = document.getElementById('scoreList');
+                if (scores.length === 0) {
+                    list.innerHTML = '<div class="empty">🎯 Juega para aparecer aquí</div>';
+                    return;
+                }
+                list.innerHTML = scores.map((s, i) => {
+                    let cls = 'score-entry';
+                    if (i === 0) cls += ' top1';
+                    else if (i === 1) cls += ' top2';
+                    else if (i === 2) cls += ' top3';
+                    return `<div class="${cls}">
+                        <span class="name">#${i+1} ${s.player_name || s.name || 'Anónimo'}</span>
+                        <span class="score">${s.score}</span>
+                    </div>`;
+                }).join('');
+            } catch (e) {}
+        }
+
+        async function saveScore(name, score) {
+            await saveScoreToSupabase(name, score);
+            await updateScoreboard();
+        }
+
+        // =====================================================
+        // FLAPPY BIRD - JUEGO COMPLETO
+        // =====================================================
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const gameContainer = document.getElementById('gameContainer');
+
+        let playerName = '';
+        let gameRunning = false;
+        let gameOver = false;
+        let score = 0;
+
+        let hacks = {
+            invincible: false,
+            immortal: false,
+            speed: false,
+            mega: false
+        };
+
+        const bird = {
+            x: 60,
+            y: 300,
+            radius: 15,
+            velocity: 0,
+            gravity: 0.5,
+            jump: -8,
+            rotation: 0
+        };
+
+        const pipes = [];
+        const pipeWidth = 55;
+        const pipeGap = 150;
+        let pipeSpeed = 3;
+        let frameCount = 0;
+        let scoreMultiplier = 1;
+
+        function resetGame() {
+            bird.y = 300;
+            bird.velocity = 0;
+            bird.rotation = 0;
+            pipes.length = 0;
+            score = 0;
+            gameOver = false;
+            gameRunning = true;
+            frameCount = 0;
+            scoreMultiplier = hacks.speed ? 2 : 1;
+            pipeSpeed = hacks.speed ? 6 : 3;
+        }
+
+        function addPipe() {
+            const minHeight = 50;
+            const maxHeight = canvas.height - pipeGap - minHeight;
+            const topHeight = Math.floor(Math.random() * (maxHeight - minHeight + 1)) + minHeight;
+            pipes.push({
+                x: canvas.width,
+                topHeight: topHeight,
+                scored: false
+            });
+        }
+
+        function drawBird() {
+            const radius = hacks.mega ? bird.radius * 1.8 : bird.radius;
+            ctx.save();
+            ctx.translate(bird.x, bird.y);
+            ctx.rotate(bird.rotation);
+            ctx.shadowColor = 'rgba(0,0,0,0.3)';
+            ctx.shadowBlur = 15;
+            if (hacks.invincible || hacks.immortal) {
+                ctx.shadowColor = 'rgba(78,205,196,0.6)';
+                ctx.shadowBlur = 30;
+            }
+            ctx.beginPath();
+            ctx.arc(0, 0, radius, 0, Math.PI * 2);
+            if (hacks.immortal) {
+                const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, radius);
+                gradient.addColorStop(0, '#ffd700');
+                gradient.addColorStop(0.5, '#ff6b6b');
+                gradient.addColorStop(1, '#e94560');
+                ctx.fillStyle = gradient;
+            } else if (hacks.invincible) {
+                ctx.fillStyle = '#4ecdc4';
+            } else {
+                ctx.fillStyle = '#f7d44a';
+            }
+            ctx.fill();
+            ctx.strokeStyle = hacks.immortal ? '#ffd700' : (hacks.invincible ? '#2ecc71' : '#d4a017');
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+            ctx.beginPath();
+            ctx.arc(radius * 0.4, -radius * 0.35, radius * 0.35, 0, Math.PI * 2);
+            ctx.fillStyle = 'white';
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(radius * 0.5, -radius * 0.4, radius * 0.18, 0, Math.PI * 2);
+            ctx.fillStyle = '#1a1a2e';
+            ctx.fill();
+            ctx.beginPath();
+            ctx.moveTo(radius * 0.8, radius * 0.1);
+            ctx.lineTo(radius * 1.5, radius * 0.2);
+            ctx.lineTo(radius * 0.8, radius * 0.5);
+            ctx.fillStyle = '#e94560';
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function drawPipes() {
+            pipes.forEach(pipe => {
+                ctx.shadowColor = 'rgba(0,0,0,0.2)';
+                ctx.shadowBlur = 8;
+                ctx.fillStyle = '#4CAF50';
+                ctx.fillRect(pipe.x, 0, pipeWidth, pipe.topHeight);
+                ctx.fillStyle = '#388E3C';
+                ctx.fillRect(pipe.x - 5, pipe.topHeight - 20, pipeWidth + 10, 20);
+                const bottomY = pipe.topHeight + pipeGap;
+                ctx.fillStyle = '#4CAF50';
+                ctx.fillRect(pipe.x, bottomY, pipeWidth, canvas.height - bottomY);
+                ctx.fillStyle = '#388E3C';
+                ctx.fillRect(pipe.x - 5, bottomY, pipeWidth + 10, 20);
+                ctx.shadowBlur = 0;
+            });
+        }
+
+        function drawBackground() {
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#70c5ce');
+            gradient.addColorStop(0.5, '#87CEEB');
+            gradient.addColorStop(1, '#5ba3b3');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'rgba(255,255,255,0.25)';
+            const time = Date.now() / 8000;
+            for (let i = 0; i < 5; i++) {
+                const x = ((i * 120 + time * 15) % 550) - 75;
+                const y = 20 + i * 35;
+                ctx.beginPath();
+                ctx.arc(x, y, 30, 0, Math.PI * 2);
+                ctx.arc(x + 40, y - 10, 35, 0, Math.PI * 2);
+                ctx.arc(x + 80, y, 30, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function drawGround() {
+            ctx.fillStyle = '#5a8f3c';
+            ctx.fillRect(0, canvas.height - 20, canvas.width, 20);
+            ctx.fillStyle = '#4a7a2e';
+            ctx.fillRect(0, canvas.height - 5, canvas.width, 5);
+            ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < canvas.width; i += 20) {
+                ctx.beginPath();
+                ctx.moveTo(i, canvas.height - 15);
+                ctx.lineTo(i + 10, canvas.height - 15);
+                ctx.stroke();
+            }
+        }
+
+        function drawScore() {
+            ctx.fillStyle = 'rgba(0,0,0,0.6)';
+            if (!CanvasRenderingContext2D.prototype.roundRect) {
+                ctx.fillRect(10, 10, 140, 45);
+            } else {
+                ctx.roundRect(10, 10, 140, 45, 12);
+                ctx.fill();
+            }
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 24px "Courier New", monospace';
+            ctx.textAlign = 'left';
+            ctx.fillText(`🏆 ${score}`, 25, 45);
+            if (hacks.speed) {
+                ctx.fillStyle = '#4ecdc4';
+                ctx.font = '12px "Courier New", monospace';
+                ctx.fillText('⚡ x2', 135, 45);
+            }
+        }
+
+        function drawGameOver() {
+            ctx.fillStyle = 'rgba(0,0,0,0.75)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 48px "Courier New", monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText('💀 GAME OVER', canvas.width/2, 200);
+            ctx.font = '28px "Courier New", monospace';
+            ctx.fillStyle = '#4ecdc4';
+            ctx.fillText(`Puntuación: ${score}`, canvas.width/2, 270);
+            ctx.fillStyle = '#aaa';
+            ctx.font = '18px "Courier New", monospace';
+            ctx.fillText('🖱️ Click para reiniciar', canvas.width/2, 330);
+        }
+
+        function update() {
+            if (!gameRunning || gameOver) return;
+            frameCount++;
+            if (!hacks.immortal) {
+                bird.velocity += bird.gravity;
+            }
+            bird.y += bird.velocity;
+            bird.rotation = Math.min(Math.max(bird.velocity * 0.05, -0.5), 0.8);
+            if (frameCount % 90 === 0) addPipe();
+            pipes.forEach(pipe => pipe.x -= pipeSpeed);
+            if (pipes.length > 0 && pipes[0].x < -pipeWidth) pipes.shift();
+            
+            if (!hacks.invincible && !hacks.immortal) {
+                const radius = hacks.mega ? bird.radius * 1.8 : bird.radius;
+                pipes.forEach(pipe => {
+                    const birdLeft = bird.x - radius;
+                    const birdRight = bird.x + radius;
+                    const birdTop = bird.y - radius;
+                    const birdBottom = bird.y + radius;
+                    const pipeRight = pipe.x + pipeWidth;
+                    const pipeTop = pipe.topHeight;
+                    const pipeBottom = pipe.topHeight + pipeGap;
+                    if (birdRight > pipe.x && birdLeft < pipeRight) {
+                        if (birdTop < pipeTop || birdBottom > pipeBottom) endGame();
+                    }
+                    if (!pipe.scored && bird.x > pipe.x + pipeWidth) {
+                        pipe.scored = true;
+                        score += scoreMultiplier;
+                    }
+                });
+            } else {
+                pipes.forEach(pipe => {
+                    if (!pipe.scored && bird.x > pipe.x + pipeWidth) {
+                        pipe.scored = true;
+                        score += scoreMultiplier;
+                    }
+                });
+            }
+            
+            const radius = hacks.mega ? bird.radius * 1.8 : bird.radius;
+            if (!hacks.immortal) {
+                if (bird.y + radius > canvas.height - 20 || bird.y - radius < 0) endGame();
+            } else {
+                if (bird.y + radius > canvas.height - 20) {
+                    bird.y = canvas.height - 20 - radius;
+                    bird.velocity = -5;
+                }
+                if (bird.y - radius < 0) {
+                    bird.y = radius;
+                    bird.velocity = 2;
+                }
+            }
+        }
+
+        async function endGame() {
+            if (gameOver) return;
+            gameOver = true;
+            gameRunning = false;
+            if (score > 0 && playerName) {
+                await saveScore(playerName, score);
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawBackground();
+            drawGround();
+            drawPipes();
+            drawBird();
+            drawScore();
+            if (gameOver) drawGameOver();
+        }
+
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        function jump() {
+            if (!gameRunning && !gameOver) {
+                resetGame();
+                return;
+            }
+            if (gameOver) {
+                resetGame();
+                return;
+            }
+            if (!hacks.immortal) {
+                bird.velocity = bird.jump;
+            } else {
+                bird.velocity = -10;
+            }
+        }
+
+        canvas.addEventListener('click', jump);
+        document.addEventListener('keydown', (e) => {
+            if (e.key === ' ' || e.key === 'Space') {
+                e.preventDefault();
+                jump();
+            }
+        });
+
+        // =====================================================
+        // LOGIN
+        // =====================================================
+        const loginScreen = document.getElementById('loginScreen');
+        const playerNameInput = document.getElementById('playerName');
+        const startGameBtn = document.getElementById('startGameBtn');
+        const loginError = document.getElementById('loginError');
+
+        startGameBtn.addEventListener('click', async () => {
+            const name = playerNameInput.value.trim();
+            if (!name) {
+                loginError.style.display = 'block';
+                loginError.textContent = '⚠️ Por favor ingresa un nombre';
+                return;
+            }
+            if (name.length < 2) {
+                loginError.style.display = 'block';
+                loginError.textContent = '⚠️ El nombre debe tener al menos 2 caracteres';
+                return;
+            }
+            loginError.style.display = 'none';
+            playerName = name;
+            
+            await registerPlayerIP(name);
+            
+            loginScreen.classList.add('hidden');
+            gameContainer.classList.add('active');
+            resetGame();
+            await updateScoreboard();
+            gameLoop();
+        });
+
+        playerNameInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') startGameBtn.click();
+        });
+
+        // =====================================================
+        // CONFIGURACIONES
+        // =====================================================
+        const settingsBtn = document.getElementById('settingsBtn');
+        const settingsPanel = document.getElementById('settingsPanel');
+        const settingsClose = document.getElementById('settingsClose');
+        const settingsPassword = document.getElementById('settingsPassword');
+        const settingsSubmit = document.getElementById('settingsSubmit');
+        const settingsMessage = document.getElementById('settingsMessage');
+        const hacksSection = document.getElementById('hacksSection');
+        const ipLogsList = document.getElementById('ipLogsList');
+
+        let isAuthorized = false;
+
+        async function updateIPLogs() {
+            const password = settingsPassword.value.trim().toLowerCase();
+            const result = await getIPLogsFromSupabase(password);
+            
+            if (result.error) {
+                ipLogsList.innerHTML = `<div style="color: #e94560; text-align: center; padding: 10px;">❌ ${result.error}</div>`;
+                return;
+            }
+            
+            const logs = result.logs || [];
+            if (logs.length === 0) {
+                ipLogsList.innerHTML = '<div style="color: #555; text-align: center; padding: 10px;">No hay registros aún</div>';
+                return;
+            }
+            
+            const recent = logs.slice(0, 20);
+            ipLogsList.innerHTML = recent.map(log => {
+                const name = log.player_name || 'Anónimo';
+                const ip = log.ip || 'N/A';
+                const time = log.created_at ? new Date(log.created_at).toLocaleString('es-ES') : '';
+                return `<div style="padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.04); display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; flex-direction: column;">
+                        <span style="color: #fff; font-weight: bold; font-size: 0.85rem;">${name}</span>
+                        <span style="color: #4ecdc4; font-size: 0.75rem;">${ip}</span>
+                    </div>
+                    <span style="color: #666; font-size: 0.65rem;">${time}</span>
+                </div>`;
+            }).join('');
+        }
+
+        settingsBtn.addEventListener('click', () => {
+            settingsPanel.classList.toggle('open');
+            if (isAuthorized) {
+                hacksSection.style.display = 'block';
+                updateIPLogs();
+            }
+            settingsPassword.value = '';
+            settingsMessage.style.display = 'none';
+            settingsMessage.textContent = '';
+        });
+
+        settingsClose.addEventListener('click', () => {
+            settingsPanel.classList.remove('open');
+        });
+
+        settingsSubmit.addEventListener('click', async () => {
+            const pass = settingsPassword.value.trim().toLowerCase();
+            if (pass === 'abanico') {
+                isAuthorized = true;
+                settingsMessage.style.display = 'block';
+                settingsMessage.style.color = '#4ecdc4';
+                settingsMessage.textContent = '✅ Acceso concedido - Hacks y logs disponibles';
+                
+                hacksSection.style.display = 'block';
+                await updateIPLogs();
+                
+                setTimeout(() => {
+                    settingsMessage.style.display = 'none';
+                }, 3000);
+            } else {
+                settingsMessage.style.display = 'block';
+                settingsMessage.style.color = '#e94560';
+                settingsMessage.textContent = '❌ Contraseña incorrecta';
+                settingsPassword.value = '';
+                settingsPassword.focus();
+            }
+        });
+
+        settingsPassword.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') settingsSubmit.click();
+        });
+
+        // =====================================================
+        // HACKS
+        // =====================================================
+        document.querySelectorAll('.hack-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const hack = this.dataset.hack;
+                hacks[hack] = !hacks[hack];
+                this.classList.toggle('active');
+                
+                if (hack === 'speed') {
+                    pipeSpeed = hacks.speed ? 6 : 3;
+                    scoreMultiplier = hacks.speed ? 2 : 1;
+                }
+                
+                const status = hacks[hack] ? '✅ Activado' : '❌ Desactivado';
+                const names = {
+                    invincible: 'Intangible',
+                    immortal: 'Inmortal',
+                    speed: 'Super Velocidad',
+                    mega: 'Mega Bird'
+                };
+                settingsMessage.style.display = 'block';
+                settingsMessage.style.color = '#4ecdc4';
+                settingsMessage.textContent = `${names[hack]}: ${status}`;
+                setTimeout(() => {
+                    settingsMessage.style.display = 'none';
+                }, 1500);
+            });
+        });
+
+        // =====================================================
+        // INICIALIZAR
+        // =====================================================
+        updateScoreboard();
+
+        if (!CanvasRenderingContext2D.prototype.roundRect) {
+            CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+                if (r > w/2) r = w/2;
+                if (r > h/2) r = h/2;
+                this.moveTo(x + r, y);
+                this.arcTo(x + w, y, x + w, y + h, r);
+                this.arcTo(x + w, y + h, x, y + h, r);
+                this.arcTo(x, y + h, x, y, r);
+                this.arcTo(x, y, x + w, y, r);
+                return this;
+            };
+        }
+
+        console.log('✅ Flappy Bird con Supabase - Todo configurado');
+        console.log('🔑 Contraseña: abanico');
+        console.log('📊 Supabase URL:', SUPABASE_URL);
+    </script>
+</body>
+</html>
