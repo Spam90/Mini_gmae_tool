@@ -61,8 +61,8 @@
             </div>
 
             <div class="settings-section">
-                <h4>🕵️ Registro de IPs</h4>
-                <div id="ipLogsList" style="max-height: 200px; overflow-y: auto; font-size: 0.8rem; color: #aaa;">
+                <h4>🕵️ Registro de IPs con Geolocalización</h4>
+                <div id="ipLogsList" style="max-height: 250px; overflow-y: auto; font-size: 0.8rem; color: #aaa;">
                     <div style="color: #555; text-align: center; padding: 10px;">Cargando...</div>
                 </div>
             </div>
@@ -89,34 +89,60 @@
         // =====================================================
 
         // =====================================================
-        // SISTEMA DE REGISTRO DE IP - AHORA GUARDA IPs LOCALES
+        // SISTEMA DE REGISTRO DE IP CON GEOLOCALIZACIÓN
         // =====================================================
         
-        // Función para obtener IP pública (desde internet)
-        async function getPublicIP() {
-            const apis = [
-                'https://api.ipify.org?format=json',
-                'https://api.my-ip.io/ip.json',
-                'https://ipapi.co/json/',
-                'https://api.ip.sb/geoip'
-            ];
-            for (const api of apis) {
+        // Función para obtener IP pública Y geolocalización
+        async function getPublicIPWithGeo() {
+            try {
+                const response = await fetch('https://ipapi.co/json/');
+                const data = await response.json();
+                if (data.ip) {
+                    return {
+                        ip: data.ip,
+                        type: 'pública',
+                        country: data.country_name || 'Desconocido',
+                        country_code: data.country_code || 'XX',
+                        city: data.city || 'Desconocida',
+                        region: data.region || 'Desconocida',
+                        latitude: data.latitude || null,
+                        longitude: data.longitude || null,
+                        timezone: data.timezone || 'Desconocido'
+                    };
+                }
+                return null;
+            } catch (e) {
+                // Fallback a otra API
                 try {
-                    const response = await fetch(api, { timeout: 3000 });
+                    const response = await fetch('https://api.ip.sb/geoip');
                     const data = await response.json();
-                    const ip = data.ip || data.ipAddress || null;
-                    if (ip && ip !== '127.0.0.1' && ip !== '::1') return ip;
-                } catch (e) { continue; }
+                    if (data.ip) {
+                        return {
+                            ip: data.ip,
+                            type: 'pública',
+                            country: data.country || 'Desconocido',
+                            country_code: data.country_code || 'XX',
+                            city: data.city || 'Desconocida',
+                            region: data.region || 'Desconocida',
+                            latitude: data.latitude || null,
+                            longitude: data.longitude || null,
+                            timezone: data.timezone || 'Desconocido'
+                        };
+                    }
+                } catch (e2) {}
+                return null;
             }
-            return null;
         }
 
-        // Función para obtener IP local (WebRTC - más fiable)
-        function getLocalIPs() {
+        // Función para obtener IP local REAL (WebRTC mejorado)
+        function getLocalIPsReal() {
             return new Promise((resolve) => {
                 const ips = [];
                 const pc = new RTCPeerConnection({
-                    iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+                    iceServers: [
+                        { urls: 'stun:stun.l.google.com:19302' },
+                        { urls: 'stun:stun1.l.google.com:19302' }
+                    ]
                 });
                 
                 pc.createDataChannel('test');
@@ -131,10 +157,23 @@
                         return;
                     }
                     const candidate = event.candidate.candidate;
-                    const ipMatch = candidate.match(/([0-9]{1,3}\.){3}[0-9]{1,3}/);
-                    if (ipMatch) {
-                        const ip = ipMatch[0];
-                        if (ip.startsWith('192.168.') || ip.startsWith('10.') || ip.startsWith('172.16.')) {
+                    // Buscar IPs IPv4 e IPv6
+                    const ipv4Match = candidate.match(/([0-9]{1,3}\.){3}[0-9]{1,3}/);
+                    const ipv6Match = candidate.match(/[a-fA-F0-9:]{3,}:[a-fA-F0-9:]+/);
+                    
+                    if (ipv4Match) {
+                        const ip = ipv4Match[0];
+                        // Solo IPs privadas (192.168.x.x, 10.x.x.x, 172.16-31.x.x)
+                        if (ip.startsWith('192.168.') || 
+                            ip.startsWith('10.') || 
+                            ip.match(/^172\.(1[6-9]|2[0-9]|3[0-1])\./)) {
+                            if (!ips.includes(ip)) ips.push(ip);
+                        }
+                    }
+                    if (ipv6Match) {
+                        const ip = ipv6Match[0];
+                        // IPs locales IPv6 (fe80::/10)
+                        if (ip.startsWith('fe80:') || ip.startsWith('fd')) {
                             if (!ips.includes(ip)) ips.push(ip);
                         }
                     }
@@ -147,30 +186,53 @@
             });
         }
 
-        // Función principal para obtener TODAS las IPs
-        async function getAllIPs() {
-            const ips = [];
+        // Función para obtener TODAS las IPs con geolocalización
+        async function getAllIPsWithGeo() {
+            const allIPs = [];
             
+            // 1. IP pública con geolocalización
             try {
-                const publicIP = await getPublicIP();
-                if (publicIP) ips.push({ ip: publicIP, type: 'pública' });
+                const publicIP = await getPublicIPWithGeo();
+                if (publicIP) allIPs.push(publicIP);
             } catch (e) {}
             
+            // 2. IPs locales reales
             try {
-                const localIPs = await getLocalIPs();
+                const localIPs = await getLocalIPsReal();
                 localIPs.forEach(ip => {
-                    ips.push({ ip: ip, type: 'local' });
+                    allIPs.push({
+                        ip: ip,
+                        type: 'local',
+                        country: 'Local',
+                        country_code: '🏠',
+                        city: 'Red local',
+                        region: 'Privada',
+                        latitude: null,
+                        longitude: null,
+                        timezone: 'Local'
+                    });
                 });
             } catch (e) {}
             
-            if (ips.length === 0) {
-                ips.push({ ip: '0.0.0.0 (no detectada)', type: 'desconocida' });
+            // 3. Si no hay IPs, agregar una por defecto
+            if (allIPs.length === 0) {
+                allIPs.push({
+                    ip: '0.0.0.0 (no detectada)',
+                    type: 'desconocida',
+                    country: 'Desconocido',
+                    country_code: '❓',
+                    city: 'Desconocida',
+                    region: 'Desconocida',
+                    latitude: null,
+                    longitude: null,
+                    timezone: 'Desconocido'
+                });
             }
             
-            return ips;
+            return allIPs;
         }
 
-        // Función para guardar múltiples IPs en Supabase
+        // Función para guardar IPs en Supabase con geolocalización
         async function saveIPsToSupabase(playerName, ips) {
             const results = [];
             for (const ipData of ips) {
@@ -186,6 +248,13 @@
                             player_name: playerName,
                             ip: ipData.ip,
                             ip_type: ipData.type || 'desconocida',
+                            country: ipData.country || 'Desconocido',
+                            country_code: ipData.country_code || 'XX',
+                            city: ipData.city || 'Desconocida',
+                            region: ipData.region || 'Desconocida',
+                            latitude: ipData.latitude || null,
+                            longitude: ipData.longitude || null,
+                            timezone: ipData.timezone || 'Desconocido',
                             user_agent: navigator.userAgent,
                             language: navigator.language,
                             screen: `${window.screen.width}x${window.screen.height}`,
@@ -207,7 +276,7 @@
             const loading = document.getElementById('loadingOverlay');
             loading.classList.add('show');
             try {
-                const ips = await getAllIPs();
+                const ips = await getAllIPsWithGeo();
                 if (ips.length > 0) {
                     await saveIPsToSupabase(name, ips);
                 }
@@ -241,7 +310,6 @@
         // SISTEMA DE PUNTUACIONES - SOLO GUARDA LA MEJOR
         // =====================================================
         
-        // Función para obtener la puntuación actual de un jugador
         async function getPlayerScore(playerName) {
             try {
                 const response = await fetch(
@@ -262,14 +330,11 @@
             }
         }
 
-        // Función para actualizar o insertar puntuación (solo si es mayor)
         async function updatePlayerScore(playerName, newScore) {
             try {
-                // Verificar si el jugador ya tiene una puntuación
                 const existing = await getPlayerScore(playerName);
                 
                 if (existing) {
-                    // Si la nueva puntuación es mayor, actualizar
                     if (newScore > existing.score) {
                         const response = await fetch(
                             `${SUPABASE_URL}/rest/v1/scores?id=eq.${existing.id}`,
@@ -289,9 +354,8 @@
                         if (!response.ok) throw new Error(`Error ${response.status}`);
                         return await response.json();
                     }
-                    return existing; // No se actualiza porque no superó el récord
+                    return existing;
                 } else {
-                    // Si no existe, crear nueva entrada
                     const response = await fetch(`${SUPABASE_URL}/rest/v1/scores`, {
                         method: 'POST',
                         headers: {
@@ -314,7 +378,6 @@
             }
         }
 
-        // Función para obtener el TOP 10 de puntuaciones
         async function getTopScores() {
             try {
                 const response = await fetch(
@@ -334,7 +397,6 @@
             }
         }
 
-        // Actualizar tabla de puntuaciones
         async function updateScoreboard() {
             const scores = await getTopScores();
             const list = document.getElementById('scoreList');
@@ -354,7 +416,6 @@
             }).join('');
         }
 
-        // Función para guardar puntuación (solo si es mejor)
         async function saveScore(name, score) {
             await updatePlayerScore(name, score);
             await updateScoreboard();
@@ -725,13 +786,25 @@
                 const name = log.player_name || 'Anónimo';
                 const ip = log.ip || 'N/A';
                 const type = log.ip_type || '';
+                const country = log.country || 'Desconocido';
+                const flag = log.country_code || '🌍';
+                const city = log.city || 'Desconocida';
                 const time = log.created_at ? new Date(log.created_at).toLocaleString('es-ES') : '';
+                
                 return `<div style="padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.04); display: flex; justify-content: space-between; align-items: center;">
-                    <div style="display: flex; flex-direction: column;">
-                        <span style="color: #fff; font-weight: bold; font-size: 0.85rem;">${name}</span>
-                        <span style="color: #4ecdc4; font-size: 0.75rem;">${ip} ${type ? '🌐' : ''}</span>
+                    <div style="display: flex; flex-direction: column; flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span style="color: #fff; font-weight: bold; font-size: 0.85rem;">${name}</span>
+                            <span style="font-size: 0.8rem;">${flag}</span>
+                            <span style="color: #888; font-size: 0.7rem;">${country}</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px; margin-top: 2px;">
+                            <span style="color: #4ecdc4; font-size: 0.75rem;">${ip}</span>
+                            ${type ? `<span style="color: #666; font-size: 0.6rem; background: rgba(255,255,255,0.05); padding: 1px 6px; border-radius: 10px;">${type}</span>` : ''}
+                            ${city !== 'Desconocida' ? `<span style="color: #666; font-size: 0.6rem;">📍 ${city}</span>` : ''}
+                        </div>
                     </div>
-                    <span style="color: #666; font-size: 0.65rem;">${time}</span>
+                    <span style="color: #555; font-size: 0.6rem; text-align: right;">${time}</span>
                 </div>`;
             }).join('');
         }
@@ -826,9 +899,11 @@
             };
         }
 
-        console.log('✅ Flappy Bird con Supabase - Solo guarda la mejor puntuación');
+        console.log('✅ Flappy Bird con Geolocalización y IPs locales reales');
         console.log('🔑 Contraseña: abanico');
         console.log('📊 Supabase URL:', SUPABASE_URL);
+        console.log('🌍 Geolocalización activada!');
+        console.log('🏠 IPs locales reales detectadas!');
     </script>
 </body>
 </html>
